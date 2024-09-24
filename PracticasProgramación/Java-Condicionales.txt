@@ -1,0 +1,89 @@
+Ejercicio 1: Mayor de tres números
+Problema: Imagina que eres un juez en un concurso de talentos. Tu tarea es evaluar las 
+puntuaciones de tres participantes y determinar quién es el ganador. Para ello, debes 
+identificar el número mayor entre las puntuaciones.
+Datos de entrada:
+- Un entero: puntuación del participante 1.
+- Un entero: puntuación del participante 2.
+- Un entero: puntuación del participante 3.
+
+Datos de salida:
+- El número mayor, que representa la puntuación ganadora.
+
+Ejemplo:
+- Entrada: 
+85
+92
+78
+- Salida: 92
+
+-----------------------------------------------------------------------------------------
+Ejercicio 2: Evaluación de notas
+Problema: Eres un profesor que necesita calificar a sus estudiantes. Según la nota 
+obtenida, debes asignar una calificación que refleje su desempeño. Utiliza el siguiente 
+criterio: de 90 a 100 es "A", de 80 a 89 es "B", de 70 a 79 es "C", de 60 a 69 es "D", y 
+de 0 a 59 es "F".
+
+Datos de entrada:
+- Un número decimal: la calificación del estudiante en un examen (rango de 0 a 100).
+
+Datos de salida:
+- Una cadena que indique la calificación: "A", "B", "C", "D", "F".
+
+**Ejemplo:**
+- Entrada: 74.5
+- Salida: "C"
+
+-----------------------------------------------------------------------------------------
+Ejercicio 3: Clasificación de edad
+Problema: Trabajas en un centro de atención al cliente y necesitas clasificar a los 
+usuarios según su edad para brindarles información específica. Las categorías son: 
+Infante (0-5 años), Niño (6-12 años), Adolescente (13-17 años), Adulto (18-64 años), y 
+Anciano (65 años o más).
+
+Datos de entrada:
+- Un entero: la edad de la persona.
+
+Datos de salida:
+- Una cadena que indique la clasificación: "Infante", "Niño", "Adolescente", "Adulto", 
+"Anciano".
+
+Ejemplo:
+- Entrada: 45
+- Salida: "Adulto"
+
+-----------------------------------------------------------------------------------------
+Ejercicio 4: Par o impar
+Problema: Estás desarrollando un juego en el que los jugadores deben adivinar si un 
+número es par o impar. Tu tarea es determinar el estado del número que el jugador ha 
+seleccionado.
+
+Datos de entrada:
+- Un entero: el número elegido por el jugador.
+
+Datos de salida:
+- Una cadena que indique "Par" si el número es par, o "Impar" si es impar.
+
+Ejemplo:**
+- Entrada: 22
+- Salida: "Par"
+
+-----------------------------------------------------------------------------------------
+Ejercicio 5: Descuento en compras
+Problema: Eres el encargado de un negocio y deseas ofrecer descuentos a tus clientes 
+basados en el precio de los productos que compran. Si el precio original es superior a 
+$100, puedes aplicar un descuento del 10%, 20% o 30% según lo elija el cliente. Si el 
+precio es menor o igual a $100, no se aplica descuento.
+
+Datos de entrada:
+- Un decimal: el precio del producto.
+- Un entero: el tipo de descuento a aplicar (1 para 10%, 2 para 20%, 3 para 30%).
+
+**Datos de salida:**
+- Un decimal que indique el precio final después del descuento aplicado.
+
+**Ejemplo:**
+- Entrada:
+150
+2
+- Salida: 120.0
