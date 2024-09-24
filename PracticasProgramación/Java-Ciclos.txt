@@ -1,0 +1,110 @@
+Ejercicio 1: Secuencia de Fibonacci
+Problema:  
+La secuencia de Fibonacci es una serie de números donde cada número es la suma de los dos 
+anteriores. Comienza con 0 y 1. Tu tarea es generar la secuencia de Fibonacci hasta el 
+enésimo término, que será proporcionado por el usuario. Esto puede ser útil en 
+aplicaciones que necesiten modelar fenómenos naturales o en algoritmos que requieren 
+divisiones en tareas.
+
+Datos de entrada:  
+- Un número entero positivo, que representa cuántos términos de la secuencia se desean 
+generar.
+
+Datos de salida:  
+- Una lista de los primeros 'n' términos de la secuencia de Fibonacci.
+
+Ejemplo:  
+- Entrada: 7  
+- Salida: 0 1 1 2 3 5 8
+
+-----------------------------------------------------------------------------------------
+Ejercicio 2: Números Primos en un Rango
+Problema:  
+Un número primo es un número natural mayor que 1 que no tiene divisores más que 1 y él 
+mismo. Este ejercicio consiste en encontrar todos los números primos en un rango 
+específico definido por el usuario. Este tipo de cálculo es fundamental en la 
+criptografía y otros campos matemáticos.
+
+Datos de entrada: 
+- Dos números enteros 'a' y 'b' (donde 'a < b'), que delimitan el rango en el que se 
+buscarán los números primos.
+
+Datos de salida:
+- Una lista de todos los números primos que se encuentran en el intervalo [a, b].
+
+Ejemplo:  
+- Entrada: 
+10
+30  
+- Salida: 11 13 17 19 23 29
+
+-----------------------------------------------------------------------------------------
+Ejercicio 3: Invertir un Número
+
+Problema:  
+Invertir los dígitos de un número entero puede ser útil en diversas aplicaciones, como 
+la manipulación de datos y algoritmos de búsqueda. Este ejercicio implica tomar un número 
+y devolverlo con sus dígitos en orden inverso. Se debe manejar tanto números positivos 
+como negativos.
+
+Datos de entrada:  
+- Un número entero, que puede ser positivo o negativo.
+
+Datos de salida:  
+- El número con sus dígitos invertidos. Si el número es negativo, el signo debe 
+permanecer al principio.
+
+Ejemplos:  
+- Entrada: 12345  
+- Salida: 54321  
+
+- Entrada: -678  
+- Salida: -876
+
+-----------------------------------------------------------------------------------------
+Ejercicio 4: Mínimo Común Múltiplo (MCM)
+Problema  
+El mínimo común múltiplo (MCM) de dos números es el número más pequeño que es múltiplo de 
+ambos. Este ejercicio es importante en matemáticas para resolver problemas relacionados 
+con fracciones y es útil en programación para encontrar patrones repetitivos. Se debe 
+calcular el MCM usando el método de la descomposición en factores primos o utilizando la 
+relación entre el MCM y el máximo común divisor (MCD).
+
+Datos de entrada:
+- Dos números enteros positivos a y b.
+
+Datos de salida: 
+- El MCM de los números a y b.
+
+Ejemplos:  
+- Entrada:
+12
+18  
+- Salida: 36
+  
+- Entrada:
+8
+12  
+- Salida: 24
+
+-----------------------------------------------------------------------------------------
+Ejercicio 5: Sumar Dígitos de un Número
+Problema:  
+Calcular la suma de los dígitos de un número entero puede ser útil en diferentes 
+contextos, como la verificación de números de identificación o en algoritmos que analizan 
+patrones en datos numéricos. Este ejercicio consiste en descomponer el número en sus 
+dígitos y sumarlos, manejando adecuadamente la entrada y el formato.
+
+Datos de entrada: 
+- Un número entero, que puede ser positivo o negativo.
+
+Datos de salida:  
+- La suma de los dígitos. Si el número es negativo, se deben considerar solo los dígitos 
+sin el signo.
+
+Ejemplos:  
+- Entrada: 456  
+- Salida: 15
+  
+- Entrada: -123  
+- Salida: 6
