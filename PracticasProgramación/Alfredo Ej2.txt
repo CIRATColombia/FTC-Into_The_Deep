@@ -1,0 +1,36 @@
+import java.util.Scanner; 
+
+class Main {
+  public static void main(String[] args) {
+    Scanner myObj1 = new Scanner(System.in);  
+    System.out.println("Ingrese el primer numero");
+    int N1 = myObj1.nextInt(); 
+    
+    Scanner myObj2 = new Scanner(System.in);  
+    System.out.println("Ingrese el segundo numero");
+    int N2 = myObj2.nextInt(); 
+    
+    int a=0;
+    int b=0;
+    
+    if(N2>N1){
+        a = N2;
+    }else if(N1>N2){
+        a = N1;
+    }
+    
+    int i = 1;
+        
+    while(true){
+        i += 1;
+        
+        if(i%N1 == 0 && i%N2 == 0){
+            b = i;
+            break;
+        }
+    }
+    
+    System.out.println("el MCM es: " + b);
+        
+    }
+}

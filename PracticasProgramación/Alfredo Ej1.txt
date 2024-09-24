@@ -1,0 +1,27 @@
+import java.util.Scanner; 
+
+class Main {
+  public static void main(String[] args) {
+    Scanner myObj1 = new Scanner(System.in);  
+    System.out.println("Ingrese el primer numero");
+    int N1 = myObj1.nextInt(); 
+    
+    Scanner myObj2 = new Scanner(System.in);  
+    System.out.println("Ingrese el segundo numero");
+    int N2 = myObj2.nextInt(); 
+    
+    Scanner myObj3 = new Scanner(System.in);  
+    System.out.println("Ingrese el tercer numero");
+    int N3 = myObj3.nextInt(); 
+    
+    if(N2>N1 && N2>N3){
+        System.out.println("El numero mas grade es: " + N2);
+    }else if(N1>N2 && N1>N3){
+         System.out.println("El numero mas grade es: " + N1);
+    }else if(N3>N2 && N3>N1){
+        System.out.println("El numero mas grade es: " + N3);
+    }
+        
+        
+    }
+}
