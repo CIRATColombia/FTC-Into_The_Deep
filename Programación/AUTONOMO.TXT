@@ -1,0 +1,328 @@
+package org.firstinspires.ftc.teamcode;
+
+import android.util.Size;
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import com.qualcomm.robotcore.hardware.Blinker;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.List;
+
+
+@Autonomous(name = "AprilTag")
+public class AprilTag extends LinearOpMode {
+    // Motores de las llantas 
+    
+    private DcMotorEx atrasDerecha;
+    private DcMotorEx atrasIzquierda;
+    private DcMotorEx adelanteDerecha;
+    private DcMotorEx adelanteIzquierda;
+    
+    // Motores del brazo 
+    
+    private DcMotor extensibleDerecha;
+    private DcMotor extensibleIzquierda;
+
+    // IMU
+    IMU imu;
+    
+    static RevHubOrientationOnRobot.LogoFacingDirection[] logoFacingDirections
+            = RevHubOrientationOnRobot.LogoFacingDirection.values();
+    static RevHubOrientationOnRobot.UsbFacingDirection[] usbFacingDirections
+        = RevHubOrientationOnRobot.UsbFacingDirection.values();
+    
+    private int                 logoFacingDirectionPosition;
+    private int                 usbFacingDirectionPosition;
+    
+    private double              Z_axis;
+    private double              previousHeading = 0;
+    private double              integratedHeading = 0;
+    private double              angleTarget;
+
+    // Webcam 
+
+    private static final boolean USE_WEBCAM = true; 
+
+    // Variables globales del April Tag
+
+    public double distanciaEnX;
+    public double distanciaEnY;
+    
+    public int aprilTagN;
+    
+    // Aca se guarda el AprilTag processor en el momento x.
+     
+    private AprilTagProcessor aprilTag;
+
+    // Aca se guarda el valor del vision portal en el momento x.
+     
+    private VisionPortal visionPortal;
+    
+    private double getAngle(){   
+        YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+        Z_axis = orientation.getYaw(AngleUnit.DEGREES);
+        double currentHeading = Z_axis;
+        double deltaHeading = currentHeading - previousHeading;
+        
+        if (deltaHeading < -180){
+            deltaHeading += 360;
+        }else if (deltaHeading >= 180){
+            deltaHeading -= 360;
+        }
+        
+        integratedHeading += deltaHeading;
+        previousHeading = currentHeading;
+        
+        return integratedHeading;
+    }
+    
+    private void girar(double grados, double velocidad){
+        
+        double Kp = 2;
+        double Kd = 0.2;
+        double Ki = 0.02;
+        
+        double error;
+        double errorAnterior = 0;
+        
+        //Actualizar el angulo del Robot con el IMU
+        imu.resetYaw();
+        double currentAngle = getAngle();
+        
+        atrasDerecha.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        atrasIzquierda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        adelanteDerecha.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        adelanteIzquierda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        
+        if(grados > 0){
+            while(currentAngle <= grados){
+                atrasDerecha.setVelocity(velocidad);   
+                atrasIzquierda.setVelocity(velocidad*0.9);   
+                adelanteDerecha.setVelocity(velocidad*0.9);  
+                adelanteIzquierda.setVelocity(velocidad);
+                
+                
+                currentAngle = getAngle();
+                
+                telemetry.addData("Angulo:", getAngle());
+                telemetry.update();
+            }
+        }else if(grados < 0){
+            while(currentAngle >= grados){    
+                atrasDerecha.setVelocity(-velocidad);   
+                atrasIzquierda.setVelocity(-velocidad*0.9);   
+                adelanteDerecha.setVelocity(-velocidad*0.9);  
+                adelanteIzquierda.setVelocity(-velocidad);
+                currentAngle = getAngle();
+            }                
+        }else if(grados == 0){
+            telemetry.addData("Error", "Porque carajo quieres que gire 0 grados jajaja, pendejo");
+            telemetry.update();
+
+        }
+        
+        atrasDerecha.setVelocity(0);   
+        atrasIzquierda.setVelocity(0);   
+        adelanteDerecha.setVelocity(0);  
+        adelanteIzquierda.setVelocity(0);
+
+    }
+    
+    private void avanzar(int objetivo, double velocidad){
+        
+        objetivo *= 10;
+        
+        atrasDerecha.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        atrasIzquierda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        adelanteDerecha.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        adelanteIzquierda.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);  
+     
+        atrasDerecha.setTargetPosition(objetivo);
+        atrasIzquierda.setTargetPosition(-objetivo);
+        adelanteDerecha.setTargetPosition(objetivo);
+        adelanteIzquierda.setTargetPosition(-objetivo);
+        
+        atrasDerecha.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        atrasIzquierda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        adelanteDerecha.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        adelanteIzquierda.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        
+        atrasDerecha.setPower(velocidad);   
+        atrasIzquierda.setPower(-velocidad);   
+        adelanteDerecha.setPower(velocidad);  
+        adelanteIzquierda.setPower(-velocidad);
+        
+        while (adelanteIzquierda.isBusy()) {
+            telemetry.addData("atrasDerecha", atrasDerecha.getCurrentPosition());
+            telemetry.addData("atrasIzquierda", atrasIzquierda.getCurrentPosition());
+            telemetry.addData("adelanteDerecha", adelanteDerecha.getCurrentPosition());
+            telemetry.addData("adelanteIzquierda", adelanteIzquierda.getCurrentPosition());
+            telemetry.update();
+            
+            sleep(20);
+        }
+        
+        atrasDerecha.setVelocity(0);
+        atrasIzquierda.setVelocity(0);
+        adelanteDerecha.setVelocity(0);
+        adelanteIzquierda.setVelocity(0);
+        
+        
+    }
+
+
+    @Override
+    public void runOpMode() {
+        atrasDerecha = hardwareMap.get(DcMotorEx.class, "atrasDerecha");
+        atrasIzquierda = hardwareMap.get(DcMotorEx.class, "atrasIzquierda");
+        adelanteDerecha = hardwareMap.get(DcMotorEx.class, "adelanteDerecha");
+        adelanteIzquierda = hardwareMap.get(DcMotorEx.class, "adelanteIzquierda");
+        
+        extensibleDerecha = hardwareMap.get(DcMotor.class, "extensibleDerecha");
+        extensibleIzquierda = hardwareMap.get(DcMotor.class, "extensibleIzquierda");
+        imu = hardwareMap.get(IMU.class, "imu");
+        
+        IMU.Parameters myIMUparameters;
+        
+        myIMUparameters = new IMU.Parameters(
+            new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+            )
+        );
+        
+        imu.initialize(myIMUparameters);
+
+
+        initAprilTag();
+
+        // Espera a que empieze el programa.
+        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+        telemetry.addData(">", "Touch Play to start OpMode");
+        telemetry.update();
+        waitForStart();
+        
+
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                
+                //avanzar(100, 1000);
+                
+                //sleep(90);
+                
+                girar(90, 1000);
+                
+                sleep(10000);
+                
+                if(aprilTagN == 11){
+                    telemetry.addData("11","Blue Alliance Audience Wall");
+                }else if(aprilTagN == 12){
+                    telemetry.addData("12","Blue Alliance Alliance Wall");
+                }else if(aprilTagN == 13){
+                    telemetry.addData("13","Blue Alliance Rear Wall");
+                }else if(aprilTagN == 14){
+                    telemetry.addData("14","Red Alliance Rear Wall");
+                }else if(aprilTagN == 15){
+                    telemetry.addData("15","Red Alliance Alliance Wall");
+                }else if(aprilTagN == 16){
+                    telemetry.addData("16","Red Alliance Audience Wall");
+                }
+
+                telemetryAprilTag();
+
+                
+                telemetry.update();
+
+                // Solo stremea cuando esta viendo el AprilTag.
+                if (gamepad1.dpad_down) {
+                    visionPortal.stopStreaming();
+                } else if (gamepad1.dpad_up) {
+                    visionPortal.resumeStreaming();
+                }
+
+                // Sleep para no saturar la CPU.
+                sleep(20);
+            }
+        }
+
+        // Acá se cierra el visionPortal para salvar CPU cuando no se está usando.
+        visionPortal.close();
+
+    }   // final del runOpMode()
+
+    // AprilTag processor.
+     
+    private void initAprilTag() {
+
+        // Creación del procesador de los AprilTag.
+        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+
+        // Creación del Vision Portal.
+        if (USE_WEBCAM) {
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                hardwareMap.get(WebcamName.class, "Webcam 1"), aprilTag);
+        } else {
+            visionPortal = VisionPortal.easyCreateWithDefaults(
+                BuiltinCameraDirection.BACK, aprilTag);
+        }
+
+    }
+
+    // Telemetry de los AprilTag detections.
+     
+    private void telemetryAprilTag() {
+
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+        // Step through the list of detections and display info for each one.
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+                
+                aprilTagN = detection.id;
+                
+                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                
+                distanciaEnX = detection.ftcPose.x;
+                distanciaEnY = detection.ftcPose.y;
+                
+                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+            } else {
+                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+                
+                aprilTagN = detection.id;
+                
+                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+                
+                distanciaEnX = detection.center.x;
+                distanciaEnY = detection.center.y;
+            }
+        }
+
+        telemetry.addLine("XYZ = X (Right), Y (Forward), Z (Up) dist.");
+        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+        telemetry.addLine("RBE = Range, Bearing & Elevation");
+
+    }   
+
+}
