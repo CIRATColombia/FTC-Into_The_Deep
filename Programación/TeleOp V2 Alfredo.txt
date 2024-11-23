@@ -1,0 +1,225 @@
+package org.firstinspires.ftc.teamcode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.ServoImpl;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Blinker;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Blinker;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import com.qualcomm.robotcore.hardware.PwmControl.PwmRange;
+
+@TeleOp
+
+public class NewGoBilda extends LinearOpMode {
+    private Blinker control_Hub;
+    
+    // Variables globales del código
+    
+    private boolean a;
+    private boolean b;
+    
+    // Motores de las llantas
+    
+    private DcMotor atrasDerecha;
+    private DcMotor atrasIzquierda;
+    private DcMotor adelanteDerecha;
+    private DcMotor adelanteIzquierda;
+    
+    // Motores del brazo
+    
+    private DcMotor extensibleDerecha;
+    private DcMotor extensibleIzquierda;
+   
+    private DcMotorEx extensionGarra;
+    
+    // Motores del servo
+    
+    private Servo servoEspecimen;
+    private Servo servoGarra;
+    
+
+    @Override   
+    public void runOpMode() {
+        control_Hub = hardwareMap.get(Blinker.class, "Control Hub");
+        atrasDerecha = hardwareMap.get(DcMotor.class, "atrasDerecha");
+        atrasIzquierda = hardwareMap.get(DcMotor.class, "atrasIzquierda");
+        adelanteDerecha = hardwareMap.get(DcMotor.class, "adelanteDerecha");
+        adelanteIzquierda = hardwareMap.get(DcMotor.class, "adelanteIzquierda");
+        
+        extensionGarra = hardwareMap.get(DcMotorEx.class, "extensionGarra");
+        
+        extensibleDerecha = hardwareMap.get(DcMotor.class, "extensibleDerecha");
+        extensibleIzquierda = hardwareMap.get(DcMotor.class, "extensibleIzquierda");
+        
+        servoEspecimen = hardwareMap.get(Servo.class, "servoEspecimen");
+        servoGarra = hardwareMap.get(Servo.class, "servoGarra");
+
+        
+        extensibleDerecha.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        extensibleIzquierda.setMode(DcMotor.RunMode.RUN_USING_ENCODERS);
+        
+        double Joystick1LeftY;
+        double Joystick1RightY;
+        double Joystick1LeftX;
+        double Joystick1RightX;
+        
+        double Joystick2LeftY;
+        double Joystick2RightY;
+        double Joystick2LeftX;
+        double Joystick2RightX;
+        
+        // Reset de encoders de el motor de la garra
+        
+        
+        extensionGarra.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extensionGarra.setTargetPosition(Joystick2LeftY*10);
+        extensionGarra.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        
+        extensionGarra.setPower(Joystick2LeftY);
+
+
+        
+        double posicion = 0.75;  // posición inicial igual a 0.8, NO CAMBIAR
+        
+        waitForStart();
+        
+        while (opModeIsActive()) {
+            
+            // Control uno
+            
+            Joystick1LeftY = this.gamepad1.left_stick_y;
+            Joystick1RightY = this.gamepad1.right_stick_y;
+            Joystick1LeftX = this.gamepad1.left_stick_x;
+            Joystick1RightX = this.gamepad1.right_stick_x;
+            
+            // Control dos
+            
+            Joystick2LeftY = this.gamepad2.left_stick_y;
+            Joystick2RightY = this.gamepad2.right_stick_y;
+            Joystick2LeftX = this.gamepad2.left_stick_x;
+            Joystick2RightX = this.gamepad2.right_stick_x;
+
+            // Control del primer motor extensible de la garra
+            
+            
+            
+            extensionGarra.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            
+            // Set position del servoEspecimen a 90 grados
+           
+            a = true;
+            b = false;
+            
+            if(a == true){
+                servoEspecimen.setPosition(0.3);
+            }
+            
+            // Movimiento en Y de los brazos extensibles
+            
+            extensibleDerecha.setPower(Joystick2LeftY);
+            extensibleIzquierda.setPower(-Joystick2LeftY);
+            
+            
+            // Movimiento de las ruedas en Y
+            
+            if(Joystick1LeftY > 0.85){
+                
+                // Control de velocidad máxima en avanze
+                
+                atrasDerecha.setPower(-1);
+                atrasIzquierda.setPower(1);
+                adelanteDerecha.setPower(-1);
+                adelanteIzquierda.setPower(1);
+                
+            }else if(Joystick1LeftY < -0.85){
+                
+                // Control de velocidad máxima en retroceso
+                
+                atrasDerecha.setPower(1);
+                atrasIzquierda.setPower(-1);
+                adelanteDerecha.setPower(1);
+                adelanteIzquierda.setPower(-1);
+                
+            }else if(Joystick1LeftY == 0){
+                atrasDerecha.setPower(0);
+                atrasIzquierda.setPower(0);
+                adelanteDerecha.setPower(0);
+                adelanteIzquierda.setPower(0);
+            }else{
+                
+                atrasDerecha.setPower(-Joystick1LeftY);
+                atrasIzquierda.setPower(Joystick1LeftY);
+                adelanteDerecha.setPower(-Joystick1LeftY);
+                adelanteIzquierda.setPower(Joystick1LeftY);
+            }
+        
+            
+            // Movimiento de las ruedas sobre su eje
+            
+            atrasDerecha.setPower(-Joystick1RightX);
+            atrasIzquierda.setPower(-Joystick1RightX);
+            adelanteDerecha.setPower(-Joystick1RightX);
+            adelanteIzquierda.setPower(-Joystick1RightX); 
+        
+            
+            // Movimiento lateral
+            if(this.gamepad1.right_bumper){
+                
+                // Hacia la Derecha
+                
+                atrasDerecha.setPower(01);
+                atrasIzquierda.setPower(01);
+                adelanteDerecha.setPower(-01);
+                adelanteIzquierda.setPower(-01);
+                
+            }else if(this.gamepad1.left_bumper){
+                
+                // Hacia la Izquierda
+                
+                atrasDerecha.setPower(-01);
+                atrasIzquierda.setPower(-01);
+                adelanteDerecha.setPower(01);
+                adelanteIzquierda.setPower(01);
+            }
+            
+            
+            // Movimiento extensión
+            
+            extension.setPower(Joystick2RightY);
+            
+            // Movimiento garra
+           if(posicion > 1){
+                posicion=1;
+            }else if(posicion < 0){
+                posicion = 0;
+            }else if(gamepad2.dpad_up){
+                posicion+=0.008;
+            }else if(gamepad2.dpad_down){
+                posicion-=0.008;
+            }
+            
+            servoGarra.setPosition(posicion);
+            
+            
+            
+            // Telemetry
+            
+            telemetry.addData("Servo:", servoEspecimen.getPosition());
+            telemetry.addData("Status", "Running");
+            telemetry.update();
+            
+        }
+        
+
+    }
+    }
